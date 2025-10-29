@@ -156,10 +156,10 @@ app.post("/api/login", async (req, res) => {
       },
     });
 
-  } catch (error) {
-    console.error("❌ LOGIN ERROR:", error);
-    if (conn) conn.release();
-    return res.status(500).json({ message: "Server error.", error: error.message });
+} catch (error) {
+  console.error("❌ LOGIN ERROR DETAILS:", error);
+  if (conn) conn.release();
+  return res.status(500).json({ message: "Server error.", error: error.message, stack: error.stack });
   }
 });
 
