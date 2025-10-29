@@ -10,7 +10,7 @@ const crypto = require("crypto");
 const axios = require("axios");
 
 const app = express();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -108,5 +108,4 @@ app.post('/api/signup', async (req, res) => {
 });
 
 // ✅ Start Server
-const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
