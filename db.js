@@ -1,6 +1,8 @@
 // db.js
-const mysql = require('mysql2/promise');
-require('dotenv').config();
+import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,       // e.g. metro.proxy.rlwy.net
@@ -9,7 +11,8 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,   // e.g. railway
   port: process.env.DB_PORT,       // e.g. 55713
   waitForConnections: true,
-  connectionLimit: 10
+  connectionLimit: 10,
 });
 
-module.exports = pool;
+// ✅ Export as default (so it works with "import db from './db.js'")
+export default pool;
