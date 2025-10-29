@@ -57,7 +57,6 @@ app.get("/", (req, res) => {
 
 /* ================== AUTH ================== */
 
-// ✅ SIGNUP ROUTE (fixed)
 app.post("/api/signup", async (req, res) => {
   const { fullname, username, email, state, gender, reason, password } = req.body;
 
@@ -65,10 +64,11 @@ app.post("/api/signup", async (req, res) => {
     return res.status(400).json({ message: "Please fill all required fields." });
   }
 
+  let conn;
   try {
-    const conn = await pool.getConnection();
+    conn = await pool.getConnection();
 
-    // Check if user already exists
+    // ✅ Check if user exists
     const [existing] = await conn.query(
       "SELECT id FROM users WHERE email = ? OR username = ?",
       [email, username]
@@ -76,26 +76,28 @@ app.post("/api/signup", async (req, res) => {
 
     if (existing.length > 0) {
       conn.release();
-      return res
-        .status(400)
-        .json({ message: "User with this email or username already exists." });
+      return res.status(400).json({ message: "User with this email or username already exists." });
     }
 
-    // Hash password
+    // ✅ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert new user
-    await conn.query(
+    // ✅ Insert new user
+    const [result] = await conn.query(
       `INSERT INTO users (fullname, username, email, state, gender, reason, password)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [fullname, username, email, state, gender, reason, hashedPassword]
     );
 
     conn.release();
-    res.status(201).json({ message: "Account created successfully!" });
+    console.log("✅ User inserted:", result.insertId);
+
+    return res.status(201).json({ message: "Account created successfully!" });
+
   } catch (error) {
-    console.error("Server error:", error);
-    res.status(500).json({ message: "Server error." });
+    console.error("❌ SIGNUP ERROR:", error); // 👈 this will show the actual reason in Render logs
+    if (conn) conn.release();
+    return res.status(500).json({ message: "Server error.", error: error.message });
   }
 });
 
