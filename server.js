@@ -1,28 +1,62 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import bcrypt from 'bcryptjs';
-import db from './db.js'; // Make sure db.js exports your MySQL connection
+require("dotenv").config();
+const express = require("express");
+const mysql = require("mysql2/promise");
+const bodyParser = require("body-parser");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
+const path = require("path");
+const crypto = require("crypto");
+const axios = require("axios");
 
-dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 5000;
 
+// Middleware
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Root route
-app.get('/', (req, res) => {
-  res.send('Ditpay Market Backend Running 🚀');
+// MySQL connection pool
+const pool = mysql.createPool({
+  host: process.env.MYSQLHOST,
+  user: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE,
+  port: process.env.MYSQLPORT,
+  waitForConnections: true,
+  connectionLimit: 10,
 });
 
-// ✅ Connect to MySQL
-db.connect((err) => {
-  if (err) {
-    console.error('Database connection failed:', err.stack);
-    return;
+// ✅ Test DB connection
+(async () => {
+  try {
+    const [rows] = await pool.query("SELECT 1 + 1 AS result");
+    console.log("✅ Database connected. Test result:", rows[0].result);
+  } catch (err) {
+    console.error("❌ Database connection failed:", err.message);
   }
-  console.log('✅ Connected to MySQL database');
+})();
+
+// JWT authentication middleware
+const authenticateToken = (req, res, next) => {
+  const token = req.headers["authorization"]?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "No token provided" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "Invalid token" });
+    req.user = user;
+    next();
+  });
+};
+
+// Health check
+app.get("/", (req, res) => {
+  res.json({ message: "✅ DitPay backend is running" });
 });
+
+/* ================== AUTH ================== */
+
 
 // ✅ SIGNUP ROUTE
 app.post('/api/signup', async (req, res) => {
