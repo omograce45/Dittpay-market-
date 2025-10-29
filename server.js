@@ -57,6 +57,7 @@ app.get("/", (req, res) => {
 
 /* ================== AUTH ================== */
 
+// ✅ SIGNUP ROUTE
 app.post("/api/signup", async (req, res) => {
   const { fullname, username, email, state, gender, reason, password } = req.body;
 
@@ -68,9 +69,9 @@ app.post("/api/signup", async (req, res) => {
   try {
     conn = await pool.getConnection();
 
-    // ✅ Check if user exists
+    // ✅ Check if user exists (updated table name)
     const [existing] = await conn.query(
-      "SELECT id FROM users WHERE email = ? OR username = ?",
+      "SELECT id FROM users_website2 WHERE email = ? OR username = ?",
       [email, username]
     );
 
@@ -82,9 +83,9 @@ app.post("/api/signup", async (req, res) => {
     // ✅ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ Insert new user
+    // ✅ Insert new user (updated table name)
     const [result] = await conn.query(
-      `INSERT INTO users (fullname, username, email, state, gender, reason, password)
+      `INSERT INTO users_website2 (fullname, username, email, state, gender, reason, password)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [fullname, username, email, state, gender, reason, hashedPassword]
     );
@@ -95,7 +96,7 @@ app.post("/api/signup", async (req, res) => {
     return res.status(201).json({ message: "Account created successfully!" });
 
   } catch (error) {
-    console.error("❌ SIGNUP ERROR:", error); // 👈 this will show the actual reason in Render logs
+    console.error("❌ SIGNUP ERROR:", error);
     if (conn) conn.release();
     return res.status(500).json({ message: "Server error.", error: error.message });
   }
