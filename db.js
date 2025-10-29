@@ -1,14 +1,15 @@
-import mysql from 'mysql2';
-import dotenv from 'dotenv';
+// db.js
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 
-dotenv.config();
-
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT || 3306
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,       // e.g. metro.proxy.rlwy.net
+  user: process.env.DB_USER,       // usually "root"
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,   // e.g. railway
+  port: process.env.DB_PORT,       // e.g. 55713
+  waitForConnections: true,
+  connectionLimit: 10
 });
 
-export default db;
+module.exports = pool;
