@@ -102,40 +102,6 @@ app.post("/api/signup", async (req, res) => {
   }
 });
 
-// === POST Route: Add new market post ===
-app.post("/api/posts", (req, res) => {
-  const { title, price, category, city, seller, image, description } = req.body;
-
-  if (!title || !price || !category || !city || !seller || !image) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
-
-  const sql = `
-    INSERT INTO market_posts (title, price, category, city, seller, image, description)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  db.query(sql, [title, price, category, city, seller, image, description], (err) => {
-    if (err) {
-      console.error("Error inserting post:", err);
-      return res.status(500).json({ error: "Database error" });
-    }
-    res.status(200).json({ success: true, message: "Post added successfully" });
-  });
-});
-
-// === GET Route: Fetch all posts (for index page) ===
-app.get("/api/posts", (req, res) => {
-  db.query("SELECT * FROM market_posts ORDER BY id DESC", (err, results) => {
-    if (err) {
-      console.error("Error fetching posts:", err);
-      return res.status(500).json({ error: "Database error" });
-    }
-    res.json(results);
-  });
-});
-
-
 // ✅ LOGIN ROUTE (NEW)
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
@@ -196,6 +162,38 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+// === POST Route: Add new market post ===
+app.post("/api/posts", (req, res) => {
+  const { title, price, category, city, seller, image, description } = req.body;
+
+  if (!title || !price || !category || !city || !seller || !image) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  const sql = `
+    INSERT INTO market_posts (title, price, category, city, seller, image, description)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(sql, [title, price, category, city, seller, image, description], (err) => {
+    if (err) {
+      console.error("Error inserting post:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.status(200).json({ success: true, message: "Post added successfully" });
+  });
+});
+
+// === GET Route: Fetch all posts (for index page) ===
+app.get("/api/posts", (req, res) => {
+  db.query("SELECT * FROM market_posts ORDER BY id DESC", (err, results) => {
+    if (err) {
+      console.error("Error fetching posts:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(results);
+  });
+});
 
 // ✅ Start Server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
