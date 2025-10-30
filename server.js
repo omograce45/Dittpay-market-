@@ -185,7 +185,7 @@ app.post("/api/post", (req, res) => {
 });
 
 // === GET Route: Fetch all posts (for index page) ===
-app.get("/api/posts", (req, res) => {
+app.get("/api/post", (req, res) => {
   db.query("SELECT * FROM market_posts ORDER BY id DESC", (err, results) => {
     if (err) {
       console.error("Error fetching posts:", err);
