@@ -163,7 +163,7 @@ app.post("/api/login", async (req, res) => {
 });
 
 // === POST Route: Add new market post ===
-app.post("/api/posts", (req, res) => {
+app.post("/api/post", (req, res) => {
   const { title, price, category, city, seller, image, description } = req.body;
 
   if (!title || !price || !category || !city || !seller || !image) {
