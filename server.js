@@ -164,6 +164,7 @@ app.post("/api/login", async (req, res) => {
 
 // === POST Route: Add new market post ===
 app.post("/api/post", (req, res) => {
+  console.log("Received POST:", req.body);
   const { title, price, category, city, seller, image, description } = req.body;
 
   if (!title || !price || !category || !city || !description || !seller || !image) {
