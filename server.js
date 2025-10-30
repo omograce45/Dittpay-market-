@@ -166,7 +166,7 @@ app.post("/api/login", async (req, res) => {
 app.post("/api/post", (req, res) => {
   const { title, price, category, city, seller, image, description } = req.body;
 
-  if (!title || !price || !category || !city || !seller || !image) {
+  if (!title || !price || !category || !city || !description || !seller || !image) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
